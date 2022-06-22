@@ -1,0 +1,52 @@
+﻿@page "/Informacje"
+@inject NavigationManager navManager
+@inject IJSRuntime JsRuntime
+@inject AuthenticationStateProvider provider 
+<h3>Informacje</h3>
+<AuthorizeView>
+    <NotAuthorized>@if (true) { navManager.NavigateTo("login/Informacje"); }</NotAuthorized>
+</AuthorizeView>
+    <AuthorizeView Roles="RoleA">
+        <p>Informacja dla Ról A</p>
+    </AuthorizeView>
+       <AuthorizeView Roles="RoleB">
+        <p>Informacja dla Ról B</p>
+     </AuthorizeView>
+     <button @onclick="PrzyciskA">PrzyciskA</button>
+     <button @onclick="PrzyciskB">PrzyciskB</button>
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Sprawdż ważność tokenu
+        await provider.GetAuthenticationStateAsync(); 
+    }
+    async Task PrzyciskA()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        if (user.IsInRole("RoleA"))
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Rola A – OK");
+        }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "brak uprawnień");
+        }
+     }
+        async Task PrzyciskB()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+        if (user.IsInRole("RoleB"))
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "Rola A – OK");
+        }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("alert", "brak uprawnień");
+        }
+    }
+    }
