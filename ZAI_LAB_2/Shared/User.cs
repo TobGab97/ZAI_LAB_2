@@ -12,7 +12,7 @@ namespace ZAI_LAB_2.Shared
     {
         public User()
         {
-            Users = new HashSet<Users>();
+            Usery = new HashSet<Users>();
         }
 
         public int Id { get; set; }
@@ -20,6 +20,6 @@ namespace ZAI_LAB_2.Shared
         public string PasswordHash { get; set; }
         public DateTime AddTime { get; set; }
 
-        public virtual ICollection<Users> Users { get; set; }
+        public virtual ICollection<Users> Usery { get; set; }
     }
 }

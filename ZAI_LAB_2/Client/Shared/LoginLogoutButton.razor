@@ -1,0 +1,24 @@
+﻿@inject NavigationManager navi
+@inject ILocalStorageService local
+@inject AuthenticationStateProvider provider 
+
+<AuthorizeView>
+    <Authorized>
+         @context.User.FindFirst(System.Security.Claims.ClaimTypes.Name).Value
+        <button @onclick="Logout" class="btn-danger">Logout</button>
+    </Authorized>
+    <NotAuthorized>
+      
+            <LoginComp></LoginComp>
+      
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+  
+    async Task Logout()
+    {
+        await local.RemoveItemAsync("token");
+        await provider.GetAuthenticationStateAsync();
+        navi.NavigateTo("");
+    }
+}

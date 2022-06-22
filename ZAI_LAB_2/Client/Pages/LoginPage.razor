@@ -1,0 +1,13 @@
+﻿@page "/login"
+@page "/login/{stronadocelowa}"
+
+@inject HttpClient http
+@inject AuthenticationStateProvider provider
+@inject ILocalStorageService localstorage
+@inject NavigationManager navManager
+<h2>Zaloguj się</h2>
+<LoginComp stronadocelowa="@stronadocelowa"></LoginComp>
+@code {
+    [Parameter]
+    public string stronadocelowa { get; set; }
+}

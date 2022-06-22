@@ -13,7 +13,7 @@ namespace ZAI_LAB_2.Shared
             UsersRoles = new HashSet<Users>();
         }
 
-        public int RoleId { get; set; }
+        public int Id { get; set; }
         public string RoleName { get; set; }
       
         public virtual ICollection<Users> UsersRoles { get; set; }

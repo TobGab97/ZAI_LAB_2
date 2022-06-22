@@ -77,19 +77,19 @@ namespace ZAI_LAB_2.Server
 
             modelBuilder.Entity<Users>(entity =>
             {
-                entity.Property(e => e.RoleId).HasColumnName("RoleID");
+                entity.Property(e => e.RoleID).HasColumnName("RoleID");
 
-                entity.Property(e => e.UserId).HasColumnName("UserID");
+                entity.Property(e => e.UserID).HasColumnName("UserID");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.UsersRoles)
-                    .HasForeignKey(d => d.RoleId)
+                    .HasForeignKey(d => d.RoleID)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Users_ToRole");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.UserId)
+                    .WithMany(p => p.Usery)
+                    .HasForeignKey(d => d.UserID)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Users_ToUser");
             });

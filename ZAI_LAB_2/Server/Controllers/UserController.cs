@@ -22,7 +22,7 @@ namespace ZAI_LAB_2.Server.Controllers
         // GET: UserController/Details/5
         public ActionResult GetUser(int id)
         {
-            User user = _context.User.Include(u => u.Users).FirstOrDefault(x => x.Id == id);
+            User user = _context.User.Include(u => u.Usery).FirstOrDefault(x => x.Id == id);
             if (user != null)
             {
                 return Ok(user);
@@ -35,7 +35,7 @@ namespace ZAI_LAB_2.Server.Controllers
         [HttpGet("GetUsers")]
         public ActionResult GetUsers()
         {
-            var users = _context.User.Include(u => u.Users);
+            var users = _context.User.Include(u => u.Usery);
 
             if (users.Any())
             {

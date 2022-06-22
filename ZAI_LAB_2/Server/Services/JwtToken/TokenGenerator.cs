@@ -24,7 +24,7 @@ namespace ZAI_LAB_2.Server.Services.JwtToken
             
             List<Claim> claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.Name,login.Login));
-            foreach (var item in login.Users)
+            foreach (var item in login.Usery)
             {
                 claims.Add(new Claim(ClaimTypes.Role, item.Role.RoleName));
             }

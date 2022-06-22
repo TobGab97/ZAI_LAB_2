@@ -1,0 +1,31 @@
+﻿@inject HttpClient http
+@inject AuthenticationStateProvider provider
+@inject ILocalStorageService localstorage
+@inject NavigationManager navManager
+
+<EditForm Model="user" OnSubmit="Login">
+    <label for="Login">Login</label>
+    <InputText @bind-Value="user.Login"></InputText>
+     <label for="Login">Password</label>
+    <InputText @bind-Value="user.Password" type="password"></InputText>
+    <button type="submit" class="btn-primary">Zaloguj się</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string stronadocelowa { get; set; }
+
+        UserLogin user = new UserLogin();
+
+        async Task Login()
+        {
+        var result = await http.PostAsJsonAsync("Auth/Login",user);
+        if (result.IsSuccessStatusCode)
+        {
+            var token = await result.Content.ReadAsStringAsync();
+            await localstorage.SetItemAsync("token", token);
+            await provider.GetAuthenticationStateAsync();
+            navManager.NavigateTo(stronadocelowa ?? "");
+        }
+    }
+}
