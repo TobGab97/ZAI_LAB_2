@@ -1,0 +1,103 @@
+﻿@page "/Kody"
+@using ZAI_LAB_2.Shared
+@using System.Text.Json
+@inject HttpClient Http
+@inject AuthenticationStateProvider provider 
+@inject NavigationManager navManager
+@inject ILocalStorageService localStorage
+<AuthorizeView>
+    <NotAuthorized>@if (true) 
+        { 
+            <ModalDialog Title="Brak uprawnień" Text="Nie masz uprawnień do tej strony" DialogType=ModalDialog.ModalDialogType.Ok OnClose="Przekierowanie" ></ModalDialog>
+        }
+        
+    </NotAuthorized>
+    <Authorized>
+<h1>Kody pocztowe</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (kody == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <AuthorizeView Roles="DataEditing" Context="DodawanieContext">
+                    <td><button @onclick="StartDodawania" class="btn btn-primary">Dodaj</button></td>
+    </AuthorizeView>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Adres</th>
+                <th>Kod Pocztowy</th>
+                <th>Powiat</th>
+                <th>Miejscowosc </th>
+                <th>Wojewodztwo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var kod in kody)
+            {
+                <tr>
+                    <td>@kod.Adres</td>
+                    <td>@kod.KodPocztowy</td>
+                    <td>@kod.Powiat</td>
+                    <td>@kod.Miejscowosc</td>
+                    <td>@kod.Wojewodztwo</td>
+                    <AuthorizeView Roles="DataEditing" Context="DodawanieUsuwanie">
+                    <td><button @onclick="(()=>StartEdytowania(kod))" class="btn btn-primary">Edytuj</button></td>
+                    <td><button @onclick="(()=>Usuwanie(kod))" class="btn btn-danger">Usuń</button></td>
+                    </AuthorizeView>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+    </Authorized>
+</AuthorizeView>
+@code {
+    private List<KodyPocztowe> kody;
+    public string staryAdres;
+    public string staryKod;
+
+    protected override async Task OnInitializedAsync()
+    {
+        kody = await localStorage.GetItemAsync<List<KodyPocztowe>>("kody");
+        localStorage.RemoveItemAsync("kody");
+        if (kody == null )
+        {
+            kody = await Http.GetFromJsonAsync<List<KodyPocztowe>>("Kod");
+        }
+        kody = kody.OrderBy(x => x.KodPocztowy).ToList();
+    }
+
+    private async Task StartDodawania()
+    {
+         await localStorage.SetItemAsync("kody", kody);
+        navManager.NavigateTo("Kody/Dodawanie");
+    }
+
+    private async Task StartEdytowania(KodyPocztowe kod)
+    {
+        await localStorage.SetItemAsync("kody", kody); 
+        navManager.NavigateTo($"Kody/Edycja/{kod.Adres}/{kod.KodPocztowy}");
+    } 
+
+    async Task Usuwanie(KodyPocztowe kod)
+    {
+        String Kod = kod.KodPocztowy;
+        String Adres = kod.Adres;
+        var result = await Http.DeleteAsync($"kod?Adres={Adres}&Kod={Kod}");
+        if (result.IsSuccessStatusCode)
+        {
+            kody.Remove(kod);
+            StateHasChanged();
+        }
+    }
+    
+    async Task Przekierowanie()
+    {
+        navManager.NavigateTo("/");
+    }
+}

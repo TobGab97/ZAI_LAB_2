@@ -1,0 +1,58 @@
+﻿@page "/Kody/Edycja/{staryAdres}/{staryKod}"
+@using ZAI_LAB_2.Shared
+@inject HttpClient Http
+@inject NavigationManager navManager
+@inject ILocalStorageService localstorage
+         <EditForm Model="EdytowanyKod" Context="Edytowaniefrom" >
+                    <label for="Adres" class="form-label" >Adres</label> 
+                   <InputText @bind-Value="EdytowanyKod.Adres"class="form-control"></InputText>
+                    <label for="KodPocztowy" class="form-label" >KodPocztowy</label>
+                   <InputText @bind-Value="EdytowanyKod.KodPocztowy"class="form-control"></InputText>
+                    <label for="Miejscowosc" class="form-label">Miejscowosc</label>
+                   <InputText @bind-Value="EdytowanyKod.Miejscowosc"class="form-control"></InputText>
+                    <label for="Powiat" class="form-label">Powiat</label>
+                   <InputText @bind-Value="EdytowanyKod.Powiat"class="form-control"></InputText>
+                    <label for="Wojewodztwo" class="form-label">Wojewodztwo</label>
+                   <InputText @bind-Value="EdytowanyKod.Wojewodztwo"class="form-control"></InputText>
+                   <button class ="btn btn-primary" @onclick="Edytowanie">Edytuj</button>
+                   <button class = "btn btnbtn-danger" @onclick="Anuluj">Anuluj</button>
+                   </EditForm>
+@code {
+
+    public KodyPocztowe EdytowanyKod = new KodyPocztowe();
+
+    [Parameter]
+    public  string staryAdres { get; set; }
+    [Parameter]
+    public  string staryKod { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var kody = await localstorage.GetItemAsync<List<KodyPocztowe>>("kody");
+        var zmieniany = kody.FirstOrDefault(x => x.Adres == staryAdres && x.KodPocztowy == staryKod);
+        EdytowanyKod = zmieniany;
+    }
+
+
+
+    async Task Edytowanie()
+    {
+
+        var result = await Http.PutAsJsonAsync($"kod?staryAdres={staryAdres}&staryKod={staryKod}",EdytowanyKod);
+        if(result.IsSuccessStatusCode)
+        {
+            var kody = await localstorage.GetItemAsync<List<KodyPocztowe>>("kody");
+            var zmieniany = kody.FirstOrDefault(x => x.Adres == staryAdres && x.KodPocztowy == staryKod);
+            kody.Remove(zmieniany);
+            kody.Add(EdytowanyKod);
+
+        await localstorage.SetItemAsync("kody", kody);
+        navManager.NavigateTo("/Kody");
+        }
+      
+    }
+       async Task Anuluj()
+    {
+        navManager.NavigateTo("/Kody");
+    }
+}

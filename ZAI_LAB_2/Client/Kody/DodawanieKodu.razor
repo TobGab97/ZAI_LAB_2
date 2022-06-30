@@ -1,0 +1,40 @@
+﻿@page "/Kody/Dodawanie"
+@using ZAI_LAB_2.Shared
+@inject HttpClient Http
+@inject NavigationManager navManager
+@inject ILocalStorageService localstorage
+         <EditForm Model="DodawanyKod" Context="Dodawaniefrom" >
+                    <label for="Adres" class="form-label" >Adres</label> 
+                   <InputText @bind-Value="DodawanyKod.Adres"class="form-control"></InputText>
+                    <label for="KodPocztowy" class="form-label" >KodPocztowy</label>
+                   <InputText @bind-Value="DodawanyKod.KodPocztowy"class="form-control"></InputText>
+                    <label for="Miejscowosc" class="form-label">Miejscowosc</label>
+                   <InputText @bind-Value="DodawanyKod.Miejscowosc"class="form-control"></InputText>
+                    <label for="Powiat" class="form-label">Powiat</label>
+                   <InputText @bind-Value="DodawanyKod.Powiat"class="form-control"></InputText>
+                    <label for="Wojewodztwo" class="form-label">Wojewodztwo</label>
+                   <InputText @bind-Value="DodawanyKod.Wojewodztwo"class="form-control"></InputText>
+                   <button class ="btn btn-primary" @onclick="Dodawanie">Dodaj</button>
+                   <button class = "btn btnbtn-danger" @onclick="Anuluj">Anuluj</button>
+                   </EditForm>
+@code {
+    public KodyPocztowe DodawanyKod = new KodyPocztowe();
+
+
+
+
+    async Task Dodawanie()
+    {
+
+        var result = Http.PostAsJsonAsync("kod", DodawanyKod);
+        var kody = await localstorage.GetItemAsync<List<KodyPocztowe>>("kody");
+        kody.Add(DodawanyKod);
+        await localstorage.SetItemAsync("kody", kody);
+        navManager.NavigateTo("/Kody");
+    }
+    async Task Anuluj()
+    {
+        navManager.NavigateTo("/Kody");
+    }
+
+}
