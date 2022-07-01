@@ -29,22 +29,22 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Adres</th>
                 <th>Kod Pocztowy</th>
-                <th>Powiat</th>
+                <th>Adres</th>
                 <th>Miejscowosc </th>
                 <th>Wojewodztwo</th>
+                <th>Powiat</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var kod in kody)
             {
                 <tr>
-                    <td>@kod.Adres</td>
                     <td>@kod.KodPocztowy</td>
-                    <td>@kod.Powiat</td>
+                    <td>@kod.Adres</td>
                     <td>@kod.Miejscowosc</td>
                     <td>@kod.Wojewodztwo</td>
+                    <td>@kod.Powiat</td>
                     <AuthorizeView Roles="DataEditing" Context="DodawanieUsuwanie">
                     <td><button @onclick="(()=>StartEdytowania(kod))" class="btn btn-primary">Edytuj</button></td>
                     <td><button @onclick="(()=>Usuwanie(kod))" class="btn btn-danger">Usuń</button></td>
@@ -58,8 +58,7 @@ else
 </AuthorizeView>
 @code {
     private List<KodyPocztowe> kody;
-    public string staryAdres;
-    public string staryKod;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -69,26 +68,25 @@ else
         {
             kody = await Http.GetFromJsonAsync<List<KodyPocztowe>>("Kod");
         }
-        kody = kody.OrderBy(x => x.KodPocztowy).ToList();
+        kody = kody.OrderBy(x => x.Id).ToList();
     }
 
     private async Task StartDodawania()
     {
-         await localStorage.SetItemAsync("kody", kody);
+        await localStorage.SetItemAsync("kody", kody);
         navManager.NavigateTo("Kody/Dodawanie");
     }
 
     private async Task StartEdytowania(KodyPocztowe kod)
     {
         await localStorage.SetItemAsync("kody", kody); 
-        navManager.NavigateTo($"Kody/Edycja/{kod.Adres}/{kod.KodPocztowy}");
+        navManager.NavigateTo($"Kody/Edycja/{kod.Id}");
     } 
 
     async Task Usuwanie(KodyPocztowe kod)
     {
-        String Kod = kod.KodPocztowy;
-        String Adres = kod.Adres;
-        var result = await Http.DeleteAsync($"kod?Adres={Adres}&Kod={Kod}");
+        String id = kod.Id.ToString();
+        var result = await Http.DeleteAsync($"kod?Id={id}");
         if (result.IsSuccessStatusCode)
         {
             kody.Remove(kod);

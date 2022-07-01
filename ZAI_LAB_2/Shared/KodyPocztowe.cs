@@ -8,6 +8,8 @@ namespace ZAI_LAB_2.Shared
 {
     public partial class KodyPocztowe
     {
+
+
         public long Id { get; set; }
         public string KodPocztowy { get; set; }
         public string Adres { get; set; }

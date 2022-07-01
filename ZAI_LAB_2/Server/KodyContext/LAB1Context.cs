@@ -26,8 +26,10 @@ namespace ZAI_LAB_2.Server
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+       
             modelBuilder.Entity<KodyPocztowe>(entity =>
             {
+                
                 entity.ToTable("Kody_Pocztowe");
 
                 entity.Property(e => e.Adres)

@@ -28,9 +28,48 @@ namespace ZAI_LAB_2.Server.Controllers
         public IEnumerable<KodyPocztowe> Get()
         {
 
+            return _context.KodyPocztowe.Take(5).ToList();
+            //return _context.KodyPocztowe.ToList();
 
-            return _context.KodyPocztowe.ToList();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] KodyPocztowe kody)
+        {
+            _context.Add(kody);
+            _context.SaveChanges();
+            return Ok(kody);
+        }
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete(String Adres, String Kod)
+        {
+
+
+            var usuwany = _context.KodyPocztowe.FirstOrDefault(x => x.Adres == Adres && x.KodPocztowy == Kod);
+
+            if (usuwany == null)
+            {
+                return NotFound("Nie ma takiego kodu");
+            }
+            _context.KodyPocztowe.Remove(usuwany);
+            _context.SaveChanges();
+            return Ok();
+        }
+        [HttpPut]
+        public async Task<IActionResult> Put(String staryId, KodyPocztowe nowyKod)
+        {
+            long staryId2 = long.Parse(staryId);
+            var edytowany = _context.KodyPocztowe.FirstOrDefault(x => x.Id == staryId2);
+
+            if (edytowany == null)
+            {
+                return NotFound("Nie ma takiego kodu");
+            }
+
+            _context.KodyPocztowe.Remove(edytowany);
+            _context.KodyPocztowe.Add(nowyKod);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }
