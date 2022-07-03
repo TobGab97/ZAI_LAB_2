@@ -6,9 +6,9 @@
     @if (EdytowanyKod != null)
    {
          <EditForm Model="EdytowanyKod" OnSubmit="Edytuj" >
-         
+
             <label for="Edytuj" class="form-label" >KodPocztowy</label>
-            <InputText id="kod" @bind-Value="EdytowanyKod.KodPocztowy"class="form-control"></InputText>
+            <InputText @bind-Value="EdytowanyKod.KodPocztowy"class="form-control"></InputText>
                     <label for="Edytuj" class="form-label" >Adres</label> 
             <InputText @bind-Value="EdytowanyKod.Adres"class="form-control"></InputText>
                     <label for="Edytuj" class="form-label">Miejscowosc</label>
@@ -31,34 +31,22 @@
     public KodyPocztowe EdytowanyKod { get; set; } = new KodyPocztowe();
     public bool check;
 
-
-    async Task OnInitializedAsync()
-    {
-        
-
-        var kody = await localstorage.GetItemAsync<List<KodyPocztowe>>("kody");
-        var zmieniany = kody.FirstOrDefault(x => x.Id == staryId);
-        EdytowanyKod = zmieniany;
-        staryId2 = staryId.ToString();
-
-    }
-
-
-
     async Task Edytuj()
     {
         if (check)
         {
-            //        var result = await http.PostAsJsonAsync("Auth/Login",user);
-            var result = await Http.PutAsJsonAsync($"kod?staryId={staryId2}", EdytowanyKod);
+            Console.WriteLine("staryId2 string = "+staryId2);
+            staryId = long.Parse(staryId2);
+            Console.WriteLine("staryID long = "+staryId);
+            EdytowanyKod.Id = staryId;
+
+            var result = await Http.PutAsJsonAsync("Kod/Edytuj", EdytowanyKod);
             if (result.IsSuccessStatusCode)
             {
                 var kody = await localstorage.GetItemAsync<List<KodyPocztowe>>("kody");
                 var zmieniany = kody.FirstOrDefault(x => x.Id == staryId);
                 kody.Remove(zmieniany);
                 kody.Add(EdytowanyKod);
-                staryId2 = staryId.ToString();
-
 
                 await localstorage.SetItemAsync("kody", kody);
                 navManager.NavigateTo("/Kody");

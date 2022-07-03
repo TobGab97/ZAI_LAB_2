@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ZAI_LAB_2.Shared;
 using Microsoft.Extensions.Logging;
 using System.Text;
+using Blazored.LocalStorage;
 
 namespace ZAI_LAB_2.Server.Controllers
 {
@@ -18,10 +19,12 @@ namespace ZAI_LAB_2.Server.Controllers
         private readonly LAB1Context _context;
         private readonly ILogger<KodController> _logger;
 
+
         public KodController(ILogger<KodController> logger, LAB1Context context)
         {
             _context = context;
             _logger = logger;
+
         }
 
         [HttpGet]
@@ -55,11 +58,10 @@ namespace ZAI_LAB_2.Server.Controllers
             _context.SaveChanges();
             return Ok();
         }
-        [HttpPut]
-        public async Task<IActionResult> Put(String staryId, KodyPocztowe nowyKod)
+        [HttpPut("Edytuj")]
+        public async Task<IActionResult> Put(KodyPocztowe nowyKod)
         {
-            long staryId2 = long.Parse(staryId);
-            var edytowany = _context.KodyPocztowe.FirstOrDefault(x => x.Id == staryId2);
+            var edytowany = _context.KodyPocztowe.FirstOrDefault(x => x.Id == nowyKod.Id);
 
             if (edytowany == null)
             {
