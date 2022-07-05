@@ -85,8 +85,8 @@ else
 
     async Task Usuwanie(KodyPocztowe kod)
     {
-        String id = kod.Id.ToString();
-        var result = await Http.DeleteAsync($"kod?Id={id}");
+        String Id = kod.Id.ToString();
+        var result = await Http.DeleteAsync($"kod?Id={Id}");
         if (result.IsSuccessStatusCode)
         {
             kody.Remove(kod);

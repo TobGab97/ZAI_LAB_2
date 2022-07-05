@@ -31,24 +31,30 @@ namespace ZAI_LAB_2.Server.Controllers
         public IEnumerable<KodyPocztowe> Get()
         {
 
-            return _context.KodyPocztowe.Take(5).ToList();
+            //return _context.KodyPocztowe.TakeLast(5).ToList();
+            return _context.KodyPocztowe.OrderByDescending(k=>k.Id).Take(5).ToList();
             //return _context.KodyPocztowe.ToList();
+
 
         }
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] KodyPocztowe kody)
         {
+            var id = _context.KodyPocztowe.Max(k => k.Id);
+            long up = 1;
+            id = id + up;
+            kody.Id = id;
             _context.Add(kody);
             _context.SaveChanges();
             return Ok(kody);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(String Adres, String Kod)
+        public async Task<IActionResult> Delete(String Id)
         {
-
-
-            var usuwany = _context.KodyPocztowe.FirstOrDefault(x => x.Adres == Adres && x.KodPocztowy == Kod);
+            long id = long.Parse(Id);
+            
+            var usuwany = _context.KodyPocztowe.FirstOrDefault(x => x.Id == id);
 
             if (usuwany == null)
             {
