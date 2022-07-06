@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lab1MarekMatkowski.Shared.DTO
+namespace ZAI_LAB_2.Shared.DTO
 {
    public class UserRegisterDto
     {

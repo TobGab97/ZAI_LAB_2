@@ -1,0 +1,104 @@
+﻿@page "/Uzytkownicy"
+@using ZAI_LAB_2.Shared
+@using System.Text.Json
+@inject HttpClient Http
+@inject AuthenticationStateProvider provider 
+@inject NavigationManager navManager
+@inject ILocalStorageService localStorage
+<AuthorizeView>
+    <NotAuthorized>@if (true) 
+        { 
+            <ModalDialog Title="Brak uprawnień" Text="Nie masz uprawnień do tej strony" DialogType=ModalDialog.ModalDialogType.Ok OnClose="Przekierowanie" ></ModalDialog>
+        }
+        
+    </NotAuthorized>
+    <Authorized>
+<h1>Użytkownicy</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <AuthorizeView Roles="DataEditing" Context="DodawanieContext">
+                    <td><button @onclick="StartDodawania" class="btn btn-primary">Dodaj</button></td>
+    </AuthorizeView>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Login</th>
+                <th>PasswordHash</th>
+                <th>AddTime</th>
+                <th>Roles</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.UserId</td>
+                    <td>@user.Login</td>
+                    <td>@user.PasswordHash</td>
+                    <td>@user.AddTime</td>
+                    <td>@foreach (var item in user.roles)
+                      {
+                        @item.RoleName; @:,                     
+                      }
+                    </td>
+                    <AuthorizeView Roles="DataEditing" Context="DodawanieUsuwanie">
+                    <td><button @onclick="(()=>StartEdytowania(user))" class="btn btn-primary">Edytuj</button></td>
+                    <td><button @onclick="(()=>Usuwanie(user))" class="btn btn-danger">Usuń</button></td>
+                    </AuthorizeView>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+    </Authorized>
+</AuthorizeView>
+@code {
+    private List<UserDto> users;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await localStorage.GetItemAsync<List<UserDto>>("user");
+        if (users == null )
+        {
+            users = await Http.GetFromJsonAsync<List<UserDto>>("User/Wszyscy");
+        }
+        users = users.OrderBy(x => x.UserId).ToList();
+    }
+
+    private async Task StartDodawania()
+    {
+        await localStorage.SetItemAsync("users", users);
+        //navManager.NavigateTo("Kody/Dodawanie");
+    }
+
+    private async Task StartEdytowania(UserDto user)
+    {
+        await localStorage.SetItemAsync("users", users); 
+        //navManager.NavigateTo($"Kody/Edycja/{nowyUser.UserId}");
+    } 
+
+    async Task Usuwanie(UserDto user)
+    {
+        //String Id = kod.UserId.ToString();
+        var result = await Http.DeleteAsync($"user?id={user.UserId}");
+        if (result.IsSuccessStatusCode)
+        {
+            users.Remove(user);
+            StateHasChanged();
+        }
+    }
+    
+    async Task Przekierowanie()
+    {
+        navManager.NavigateTo("/");
+    }
+}

@@ -20,12 +20,8 @@
 @code {
     public KodyPocztowe DodawanyKod = new KodyPocztowe();
 
-
-
-
     async Task Dodawanie()
     {
-
         var result = Http.PostAsJsonAsync("kod", DodawanyKod);
         var kody = await localstorage.GetItemAsync<List<KodyPocztowe>>("kody");
         kody.Add(DodawanyKod);

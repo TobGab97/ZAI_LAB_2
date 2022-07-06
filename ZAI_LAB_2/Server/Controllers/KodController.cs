@@ -15,10 +15,8 @@ namespace ZAI_LAB_2.Server.Controllers
     [Route("[controller]")]
     public class KodController : ControllerBase
     {
-
         private readonly LAB1Context _context;
         private readonly ILogger<KodController> _logger;
-
 
         public KodController(ILogger<KodController> logger, LAB1Context context)
         {
@@ -30,12 +28,7 @@ namespace ZAI_LAB_2.Server.Controllers
         [HttpGet]
         public IEnumerable<KodyPocztowe> Get()
         {
-
-            //return _context.KodyPocztowe.TakeLast(5).ToList();
             return _context.KodyPocztowe.OrderByDescending(k=>k.Id).Take(5).ToList();
-            //return _context.KodyPocztowe.ToList();
-
-
         }
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] KodyPocztowe kody)
