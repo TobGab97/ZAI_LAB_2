@@ -1,0 +1,87 @@
+﻿@page "/Uzytkownicy/Edytowanie/{id:int}"
+@using ZAI_LAB_2.Shared
+@inject HttpClient Http
+@inject NavigationManager navManager
+@inject ILocalStorageService localstorage
+    @if (EdytowanyUser != null)
+   {
+         <EditForm Model="EdytowanyUser" >
+            <label for="Login" class="form-label" >Login</label> 
+            <InputText @bind-Value="EdytowanyUser.Login"class="form-control"></InputText>
+            <label for="Hasło" class="form-label">Hasło</label>
+            <InputText @bind-Value="EdytowanyUser.Password"class="form-control"></InputText>
+            <label for="Role" class="form-label">Role</label>
+            @foreach (var role in roles)
+            {
+                <div class="form-check">
+                    <input type="checkbox" value="@role.RoleName" class="form-check-input" @onchange="e=>{Role(role,e.Value);}">
+                    <label class="form-check-label" for="flexCheckDefault">@role.RoleName</label>
+                </div>
+            }
+            @foreach (var role in user.roles)
+            {
+                <div class="form-check">
+                    <input type="checkbox" value="@role.RoleName" class="form-check-input" checked="true" @onchange="e=>{Role(role,e.Value);}">
+                    <label class="form-check-label" for="flexCheckDefault">@role.RoleName</label>
+                </div>
+            }
+            <button class ="btn btn-primary" @onclick="Edytuj">Dodaj</button>
+            <button class = "btn btnbtn-danger" @onclick="Anuluj">Anuluj</button>
+         </EditForm>
+   }
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    public UserEditDto EdytowanyUser = new UserEditDto();
+    public List<RoleDto> roles = new List<RoleDto>();
+    public UserDto user = new UserDto(){roles= new List<RoleDto>()};
+    public List<RoleDto> userRole = new List<RoleDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await Http.GetFromJsonAsync<List<RoleDto>>("User/Roles");
+        var users = await localstorage.GetItemAsync<List<UserDto>>("users");
+        user = users.FirstOrDefault(x=>x.UserId==id);
+        foreach (var item in user.roles)
+        {
+            roles.Remove(roles.FirstOrDefault(x => x.RoleId == item.RoleId));
+            userRole.Add(item);
+        }
+    }
+    void Role(RoleDto role, object zaznaczenie)
+    {
+        if ((bool)zaznaczenie)
+        {
+            if (userRole.FirstOrDefault(x=>x.RoleId==role.RoleId)==null)
+            {
+                userRole.Add(role);
+            }
+        }
+        else
+        {
+            if (userRole.FirstOrDefault(x=>x.RoleId==role.RoleId)!=null)
+            {
+                userRole.Remove(role);
+
+            }
+        }
+    }
+    async Task Edytuj()
+    {
+        EdytowanyUser.roles = userRole;
+        EdytowanyUser.Id = id;
+        var result = Http.PutAsJsonAsync("User/Edytuj", EdytowanyUser);
+        if (result.IsCompletedSuccessfully)
+        {
+            navManager.NavigateTo("/Uzytkownicy");
+        }
+    }
+    async Task Anuluj()
+    {
+            navManager.NavigateTo("/Uzytkownicy");
+    }
+      
+}
+
+

@@ -35,9 +35,7 @@
     {
         if (check)
         {
-            Console.WriteLine("staryId2 string = "+staryId2);
             staryId = long.Parse(staryId2);
-            Console.WriteLine("staryID long = "+staryId);
             EdytowanyKod.Id = staryId;
 
             var result = await Http.PutAsJsonAsync("Kod/Edytuj", EdytowanyKod);

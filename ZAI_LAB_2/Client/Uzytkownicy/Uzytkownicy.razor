@@ -77,19 +77,19 @@ else
     private async Task StartDodawania()
     {
         await localStorage.SetItemAsync("users", users);
-        //navManager.NavigateTo("Kody/Dodawanie");
+        navManager.NavigateTo("Uzytkownicy/Dodawanie");
     }
 
     private async Task StartEdytowania(UserDto user)
     {
         await localStorage.SetItemAsync("users", users); 
-        //navManager.NavigateTo($"Kody/Edycja/{nowyUser.UserId}");
+        navManager.NavigateTo($"Uzytkownicy/Edytowanie/{user.UserId}");
     } 
 
     async Task Usuwanie(UserDto user)
     {
-        //String Id = kod.UserId.ToString();
-        var result = await Http.DeleteAsync($"user?id={user.UserId}");
+        String ID = user.UserId.ToString();
+        var result = await Http.DeleteAsync($"user?id={ID}");
         if (result.IsSuccessStatusCode)
         {
             users.Remove(user);

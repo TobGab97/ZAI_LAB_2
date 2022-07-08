@@ -99,7 +99,7 @@ namespace ZAI_LAB_2.Server.Controllers
 
             return Ok(roles);
         }
-        [HttpPost]
+        [HttpPost("Dodaj")]
         public ActionResult AddUser(UserRegisterDto user)
         {
             var ist = _context.User.FirstOrDefault(x => x.Login == user.Login);
@@ -129,7 +129,7 @@ namespace ZAI_LAB_2.Server.Controllers
             }
             return BadRequest("jest już taki użytkownik");
         }
-        [HttpPut]
+        [HttpPut("Edytuj")]
         public ActionResult EditUser(UserEditDto user)
         {
             var ist = _context.User.FirstOrDefault(x => x.Id == user.Id);
@@ -158,10 +158,11 @@ namespace ZAI_LAB_2.Server.Controllers
             }
             return NotFound("Nie ma takiego użytkownika");
         }
-        [HttpDelete("{id}")]
-        public ActionResult EditUser(int id)
+        [HttpDelete]
+        public ActionResult DeleteUser(String id)
         {
-            var user = _context.User.Include(x => x.Usery).FirstOrDefault(x => x.Id == id);
+            int ID = int.Parse(id);
+            var user = _context.User.Include(x => x.Usery).FirstOrDefault(x => x.Id == ID);
             if (user == null)
             {
                 return NotFound("nie ma takiego użytkownika");

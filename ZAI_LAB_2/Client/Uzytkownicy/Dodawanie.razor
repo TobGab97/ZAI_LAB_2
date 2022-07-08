@@ -1,0 +1,63 @@
+﻿@page "/Uzytkownicy/Dodawanie"
+@using ZAI_LAB_2.Shared
+@inject HttpClient Http
+@inject NavigationManager navManager
+@inject ILocalStorageService localstorage
+         <EditForm Model="DodawanyUser" Context="Dodawaniefrom" >
+                    <label for="Login" class="form-label" >Login</label> 
+                   <InputText @bind-Value="DodawanyUser.Login"class="form-control"></InputText>
+                    <label for="Hasło" class="form-label">Hasło</label>
+                   <InputText @bind-Value="DodawanyUser.Password"class="form-control"></InputText>
+                   <label for="Role" class="form-label">Role</label>
+                   @foreach (var role in roles)
+                  {
+                      <div class="form-check">
+                          <input type="checkbox" value="@role.RoleName" class="form-check-input" @onchange="e=>{Role(role,e.Value);}">
+                          <label class="form-check-label" for="flexCheckDefault">@role.RoleName</label>
+                      </div>
+                  }
+                   <button class ="btn btn-primary" @onclick="Dodaj">Dodaj</button>
+                   <button class = "btn btnbtn-danger" @onclick="Anuluj">Anuluj</button>
+                   </EditForm>
+@code {
+    public UserRegisterDto DodawanyUser = new UserRegisterDto();
+    public List<RoleDto> roles = new List<RoleDto>();
+    public List<RoleDto> userRole = new List<RoleDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        roles = await Http.GetFromJsonAsync<List<RoleDto>>("User/Roles");
+    }
+    void Role(RoleDto role, object zaznaczenie)
+    {
+        if ((bool)zaznaczenie)
+        {
+            if (userRole.FirstOrDefault(x=>x.RoleId==role.RoleId)==null)
+            {
+                userRole.Add(role);
+            }
+        }
+        else
+        {
+            if (userRole.FirstOrDefault(x=>x.RoleId==role.RoleId)!=null)
+            {
+                userRole.Remove(role);
+
+            }
+        }
+    }
+    async Task Dodaj()
+    {
+        DodawanyUser.roles = userRole;
+        var result = Http.PostAsJsonAsync("User/Dodaj", DodawanyUser);
+        if (result.IsCompletedSuccessfully)
+        {
+            navManager.NavigateTo("/Uzytkownicy");
+        }
+    }
+    async Task Anuluj()
+    {
+        navManager.NavigateTo("/Uzytkownicy");
+    }
+
+}
